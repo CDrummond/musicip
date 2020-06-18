@@ -1,0 +1,12 @@
+[Unit]
+Description=MusicIP LMS proxy
+After=multi-user.target mip.service
+
+
+[Service]
+Type=simple
+User=lms
+ExecStart=/usr/bin/python3 /usr/local/mip/proxy/mip-proxy.py -c /usr/local/mip/proxy/config.json
+
+[Install]
+WantedBy=multi-user.target

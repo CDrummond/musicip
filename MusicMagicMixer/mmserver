@@ -1,0 +1,23 @@
+#! /bin/sh
+
+# NON-PRIVIELEGED USER TO RUN MUSICMAGICSERVER.
+USER=
+# PATH TO THE MUSICMAGICMIXERSERVER 
+export MUSICHOME=
+case $1 in
+    start)
+	su - $USER -c $MUSICHOME"MusicMagicServer start  & > /dev/null" 
+	echo "Running MusicMagicServer"
+	exit
+	;;
+    stop)
+	su - $USER -c $MUSICHOME"MusicMagicServer stop  & > /dev/null" 
+	echo "Stopped MusicMagicServer"
+	exit
+	;;
+    *)
+        echo "Usage: /etc/rc.d/init.d/mmserver { start | stop }"
+	exit
+	;;
+esac
+

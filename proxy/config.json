@@ -1,0 +1,14 @@
+{
+ "port":10003,
+ "mip":{
+   "port":10002,
+   "host":"localhost"
+ },
+ "paths":{
+   "lms":"/home/user/Music/",
+   "mip":"/home/user/MusicIP/"
+ },
+ "transcode":["m4a"],
+ "debug":false
+}
+

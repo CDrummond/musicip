@@ -1,0 +1,12 @@
+[Unit]
+Description=MusicIP Mixer
+After=multi-user.target
+
+[Service]
+Type=simple
+User=lms
+ExecStart=/usr/local/mip/MusicMagicServer start
+ExecStop=/usr/local/mip/MusicMagicServer stop
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,91 @@
+Thanks for downloading MusicIP Mixer.  If you have questions,
+please email us at support@musicip.com, or visit our forums at
+http://forums.musicip.com.
+
+Special thanks to our many customers and testers for great feedback!
+
+We would also like to thank:
+
+Matteo-maimme@hotmail.com - for providing the original Italian translation
+
+Michael Herger - for improvements to our German translation
+
+ph_waeber@bluewin.ch - for improvements to our German & French translations
+
+Frederic Tarasevicius - for helping debug TiVo 7.1 support
+
+Oscar Forsstrom - for providing the original Swedish translation
+
+----
+
+The following copy of the end-user license agreement is provided
+for your convenience.
+
+END-USER LICENSE AGREEMENT FOR MUSICIP MIXER
+
+IMPORTANT READ CAREFULLY: This MusicIP End-User License Agreement
+("EULA") is a legal agreement between you (either an individual or a
+single entity) and MusicIP for use of MusicIP Mixer ("MIXER").
+
+By installing, copying, or otherwise using the MIXER, you agree to be
+bound by the terms of this agreement. If you do not agree to the terms
+of this agreement; you may not use the MIXER.  The MIXER is protected
+by copyright laws and international copyright treaties, as well as
+other intellectual property laws and treaties. The MIXER is licensed,
+not sold.
+
+1. GRANT OF LICENSE. This EULA grants you the following limited,
+non-exclusive rights: a. Basic Grant. You may install and use the
+MIXER on an unlimited number of computers on your premises for the
+sole purposes of non-commercial personal use.  b. Redistribution
+Requirements. If you redistribute the MIXER onto other machines, you
+agree to indemnify, hold harmless, and defend MusicIP from and
+against any claims or lawsuits, including attorneys' fees, which arise
+or result from the use, or installation of the MIXER.  c. Reserved
+Rights. MusicIP retains title and all ownership rights to the
+MIXER. All rights not expressly granted are reserved to MusicIP.
+
+2. COPYRIGHT. All rights, title, and copyrights in and to the MIXER
+and any copies of the MIXER are owned by MusicIP. The MIXER is
+protected by copyright laws and international treaty
+provisions. Therefore, you must treat the MIXER like any other
+copyrighted material.
+
+3. DESCRIPTION OF OTHER RIGHTS AND LIMITATIONS.  a. Limitations on
+Reverse-Engineering, Decompilation, and Disassembly. You may not
+reverse-engineer, decompile, modify, or disassemble the object code
+portions of the MIXER, except and only to the extent that such
+activity is expressly permitted by applicable law notwithstanding this
+limitation.  b. Termination. Without prejudice to any other rights,
+MusicIP may terminate this agreement if you fail to comply with the
+terms and conditions of this agreement. In such event, you must
+destroy all copies of the MIXER and all of its component parts.
+c. Not For Resale Software. You may not sell, resell, or otherwise
+transfer for value, the MIXER.  d. Rental. You may not rent, lease or
+lend the MIXER.
+
+NO WARRANTIES. MUSICIP EXPRESSLY DISCLAIMS ANY WARRANTY FOR THE MIXER
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE MIXER AND ANY
+RELATED DOCUMENTATION IS PROVIDED "AS IS" WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT
+LIMITATION, THE IMPLIED WARRANTIES OR CONDITIONS OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT. THE ENTIRE RISK
+ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE REMAINS WITH YOU.
+
+LIMITATION OF LIABILITY. MusicIP' entire liability and your exclusive
+remedy under this agreement shall not exceed one dollar (US $1.00).
+
+NO LIABILITY FOR DAMAGES. To the maximum extent permitted by
+applicable law, in no event shall MusicIP be liable for any damages
+whatsoever (including, without limitation, damages for loss of
+business profit, business interruption, loss of business information,
+or any other pecuniary loss) arising out of the use of, or inability
+to use, this MusicIP product, even if MusicIP has been advised of
+the possibility of such damages. Because some states/jurisdictions do
+not allow the exclusion or limitation of liability for consequential
+or incidental damages, the above limitation may not apply to you.
+
+MISCELLANEOUS This agreement is governed by the US laws of the State
+of California. Should you have any questions concerning this
+agreement, or if you desire to contact MusicIP for any reason, please
+contact MusicIP at support@musicip.com.
