@@ -78,15 +78,18 @@ def cueTracks(album, track):
     '''
     global config
     global db
-    src = os.path.join(config['paths']['lms'], album, track)
-    cursor = db.execute("select url, title from tracks where url like '%%%s#%%'" % urllib.parse.quote(src))
     tracks=[]
-    for row in cursor:
-        parts=row[0].split('#')
-        if 2==len(parts):
-            times=parts[1].split('-')
-            if 2==len(times):
-                tracks.append({'file':track, 'start':times[0], 'end':times[1], 'title':row[1]})
+    for lms_path in ['lms', 'lms-remote']:
+        src = os.path.join(config['paths'][lms_path], album, track)
+        cursor = db.execute("select url, title from tracks where url like '%%%s#%%'" % urllib.parse.quote(src))
+        for row in cursor:
+            parts=row[0].split('#')
+            if 2==len(parts):
+                times=parts[1].split('-')
+                if 2==len(times):
+                    tracks.append({'file':track, 'start':times[0], 'end':times[1], 'title':row[1]})
+        if len(tracks)>0:
+            return tracks
     return tracks
 
 
