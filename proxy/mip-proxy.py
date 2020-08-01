@@ -11,7 +11,7 @@ import argparse
 import json
 import os
 import sys
-import urllib.parse
+from urllib.parse import quote
 import urllib.request
 
 from twisted.web import server, resource
@@ -24,6 +24,10 @@ def debug(s):
     global config
     if config['debug']:
         print("INFO: %s" % s)
+
+
+def warning(s):
+    print("WARNING: %s\n" % s)
 
 
 def error(s):
@@ -44,16 +48,26 @@ def fixPaths(data, frm, to):
             if frm=='mip':
                 resp=[]
                 for line in data.split(b'\n'):
+                    orig=line.decode("utf-8")
                     line=line.replace(config['paths']['std'][frm], config['paths']['std'][to])
                     # /path/file.m4a.CUE_TRACK.start-stop.mp3 -> /path/file.m4a#start-stop
                     if b'.CUE_TRACK.' in line:
+                        addprefix = False
                         if line.startswith(b'file '):
-                            line=line[:5]+b'file://'+line[5:].replace(b'.CUE_TRACK.', b'#').replace(b'.mp3', b'')
+                            line=line[5:].replace(b'.CUE_TRACK.', b'#').replace(b'.mp3', b'')
+                            addprefix = True
                         else:
-                            line=b'file://'+line.replace(b'.CUE_TRACK.', b'#').replace(b'.mp3', b'')
+                            line=line.replace(b'.CUE_TRACK.', b'#').replace(b'.mp3', b'')
+                        parts=line.split(b'#')
+                        line=b'file://'+str.encode(quote(parts[0]))+b'#'+parts[1]
+                        if addprefix:
+                            line=b'file '+line
                     else:
                         for t in config['types']:
                             line=line.replace(t[frm], t[to])
+                        dest=line.decode("utf-8")
+                        if len(dest)>3 and not os.path.exists(dest):
+                            warning("%s does not exist. MIP:%s" % (dest, orig))
                     resp.append(line)
                 data=b'\n'.join(resp)
             else:
