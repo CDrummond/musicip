@@ -1,14 +1,12 @@
 # LMS / MusicIP Linux Integration
 
 This repo holds the scripts, and notes, used for MusicIP analysis and usage on
-my LMS setup. My albums are all stored within the same folder, with `artist - album`
-used as the naming convention - this was initially to ease copying music onto an
-SDCard for use on my phone, etc. Therefore if you wish to use any of these
-scripts and you use a different layout (e.g. `artist/album/tracks`) then
-`anlyser/mip-analyser.py` will need updating to handle this scenario.
+my LMS setup.
 
 Audio files are analysed on one machine (e.g. fast desktop/laptop) with LMS and
-(another) MusicIP run on a separate (e.g. raspberry pi) machine.
+(another) MusicIP run on a separate (e.g. raspberry pi) machine. A `tmpfs` is
+used to hold the (temporary) transcoded files, allowing for certain tags to be
+stripped from MP3s, etc.
 
 
 ## Repo contents
@@ -16,9 +14,7 @@ Audio files are analysed on one machine (e.g. fast desktop/laptop) with LMS and
 1. `MusicMagicMixer` MusicIP 1.8 and `register.key` taken from https://www.spicefly.com/
 
 2. `analyser` Python script to transcode m4a (and mp3's with numeric genres) and
-anlyse with MusicIP. *NOTE* this script assumes a flat folder structure of album
-folders of the format `artist - album` (any name really, but albums cannot be
-within artist folders).
+anlyse with MusicIP.
 
 3. `proxy` Simple python proxy to convert paths (and file extenions) from/to
 anlysis machine to/from mixing machine
