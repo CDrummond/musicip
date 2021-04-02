@@ -17,7 +17,7 @@ stripped from MP3s, etc.
 anlyse with MusicIP.
 
 3. `proxy` Simple python proxy to convert paths (and file extenions) from/to
-anlysis machine to/from mixing machine
+anlysis machine to/from mixing machine.
 
 4. `scripts` Shell scripts for starting server, UI, and renaming files.
 
@@ -36,7 +36,7 @@ have a (up to) 750Mb temporary file system.
 
 ### Running
 
-1. Call `scripts/server.sh` to start MusicMagicMixer headless, if not already running
+1. Call `scripts/server.sh start` to start MusicMagicMixer headless, if not already running
 2. Start `analyser/mip-anaylser.py`
 3. To stop analyser, simply create an empty `stop` file (e.g. `touch analyser/stop`)
 
@@ -57,11 +57,13 @@ on machine running MusicIP.
 
 ### Running
 
-5. Call `scripts/server.sh` to start MusicMagicMixer headless, if not already running
+5. Call `scripts/server.sh start` to start MusicMagicMixer headless, if not already running
 6. Start `proxy/mip-proxy.py` 
 7. Start LMS (must be started after MusicIP, and therefore also after `mip-proxy.py`)
 8. Configure LMS to use port 10003 for MIP (or whatever value used for `"mip":"port"` in `config.json`)
 
+*NOTE* `mip-proxy.py` is not required if using my [MusicIP DSTM Mixer](https://github.com/CDrummond/lms-mipmixer)
+as this handles the path and file extension conversion itself.
 
 ## Raspberry Pi installation
 
@@ -114,6 +116,8 @@ the new libc6:i386
 4. `sudo systemctl daemon-reload`
 5. `sudo systemctl enable mip-proxy.service`
 6. `sudo systemctl start mip-proxy.service`
+
+*NOTE* Only required if use SugarCube or LMS's default MusicIP integration.
 
 
 ### LMS
