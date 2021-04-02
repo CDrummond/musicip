@@ -24,6 +24,7 @@ from concurrent.futures import ThreadPoolExecutor
 FNULL = open(os.devnull, 'w')
 MIP_URL = 'http://localhost:10002/'
 AUDIO_EXTENSIONS = ['m4a', 'mp3', 'ogg', 'flac']
+PREV_RUN = '.tracks'
 
 config={}
 db=None
@@ -270,6 +271,57 @@ def removeTranscode(path):
             return
 
 
+def readPrevious():
+    prev = []
+
+    global config
+    try:
+        with open(os.path.join(config['paths']['mip'], PREV_RUN), 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        return []
+
+
+def savePrevious(prev):
+    global config
+    with open(os.path.join(config['paths']['mip'], PREV_RUN), 'w') as f:
+        json.dump(prev, f)
+
+
+def removePrevious():
+    global config
+    path = os.path.join(config['paths']['mip'], PREV_RUN)
+    if os.path.exists(path):
+        os.remove(path)
+
+
+def doAnalysis(tempToRemove):
+    try:
+        write("Add path to MIP")
+        sendMipCommand('server/add?root=%s' % config['paths']['mip']).read()
+        if not waitForIdle():
+            savePrevious(tempToRemove)
+            return False
+
+        write("Analysing")
+        sendMipCommand('server/validate?action=Start+Validation')
+        if not waitForIdle():
+            sendMipCommand('server/validate?action=Stop+Validation')
+            savePrevious(tempToRemove)
+            return False
+
+    except Exception as e:
+        print("\nMIP is no longer running? %s" % str(e))
+        savePrevious(tempToRemove)
+        return False
+
+    for temp in tempToRemove:
+        removeTranscode(temp)
+    removePrevious()
+
+    return True
+
+
 def processTrack(track, current, total):
     if not shouldStop():
         path = track['file'] if isinstance(track, dict) else track
@@ -303,31 +355,18 @@ def processTracks(tracks):
             for future in futuresList:
                 try:
                     result = future['exe'].result()
-                    tempToRemove.append(result)
+                    if result is not None:
+                        tempToRemove.append(result)
                 except Exception as e:
                     path = future['track']['file'] if isinstance(future['track'], dict) else future['track']
                     error("Failed to process %s - %s" % (path, str(e)))
                     pass
         if shouldStop():
+            savePrevious(tempToRemove)
             return
 
-        try:
-            write("Add path to MIP")
-            sendMipCommand('server/add?root=%s' % config['paths']['mip']).read()
-            if not waitForIdle():
-                return False
-
-            write("Analysing")
-            sendMipCommand('server/validate?action=Start+Validation')
-            if not waitForIdle():
-                sendMipCommand('server/validate?action=Stop+Validation')
-                return False
-        except Exception as e:
-            print("MIP is no longer running? %s" % str(e))
+        if not doAnalysis(tempToRemove):
             return False
-
-        for temp in tempToRemove:
-            removeTranscode(temp)
 
     return True
 
@@ -383,6 +422,14 @@ def main():
     toAdd, toRemove = check(mipSongs, files)
     print("Have %d file(s) to add" % len(toAdd))
     print("Have %d file(s) to remove" % len(toRemove))
+
+    # Check if we have an files left over from a previous run, and if so anayse now
+    previous = readPrevious()
+    if len(previous)>0:
+        print("Have %d file(s) to analyse from previous run" % len(previous))
+        if not doAnalysis(previous):
+            return
+
     if len(toAdd)>0:
         processTracks(toAdd)
     if len(toRemove)>0:
