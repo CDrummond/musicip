@@ -26,11 +26,11 @@ To speed up analysis, use MusicMagicMixer GUI and disable 'Connect to server' in
 }
 ```
 
-`paths.lms` is the path to music files accessible on anlysis machine.
+`paths.lms` is the path to music files accessible on analysis machine.
 
 `paths.mip` is the path that MusicIP will see. This should be in a tmpfs file
 system as this script will create transcoded files, and symlinks, etc. in this
-folder.
+folder. This should **not** be the real path to your music files!
 
 `paths.lms-remote` is the music folder root path as the remote LMS server sees
 it. This is only required for CUE file processing.
