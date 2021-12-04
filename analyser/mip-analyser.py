@@ -7,15 +7,7 @@
 # GPLv3 license.
 #
 
-import argparse
-import json
-import operator
-import os
-import pathlib
-import sqlite3
-import subprocess
-import sys
-import time
+import argparse, json, operator, os, pathlib, signal, sqlite3, subprocess, sys, time
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -34,15 +26,16 @@ def error(s):
     exit(-1)
 
 
+should_stop = False
+def sigHandler(signum, frame):
+    global should_stop
+    should_stop = True
+    _LOGGER.info('Intercepted CTRL-C, stopping (might take a few seconds)...')
+
+
 def shouldStop():
-    global config
-    return os.path.exists(config['stop'])
-
-
-def deleteStopFile():
-    global config
-    if os.path.exists(config['stop']):
-        os.remove(config['stop'])
+    global should_stop
+    return should_stop
 
 
 def sendMipCommand(path):
@@ -407,13 +400,14 @@ def main():
     if 'lib' in config:
         db = sqlite3.connect(config['lib'])
 
+    signal.signal(signal.SIGINT, sigHandler)
+
     # Check MIP is running
     try:
         sendMipApiCommand('getStatus')
     except Exception as e:
         error("MIP is not running : %s" % str(e))
 
-    deleteStopFile()
     print("Query MIP for its known songs")
     mipSongs = getMipSongs()
     files = []
@@ -437,7 +431,6 @@ def main():
         for path in toRemove:
             print("   %s" % path)
         print("\n")
-    deleteStopFile()
 
 
 if __name__ == "__main__":

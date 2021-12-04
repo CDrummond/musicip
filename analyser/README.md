@@ -3,9 +3,6 @@
 Simple script to analyse music for MusicIP. Files are transcoded if required
 and imported into MusicIP.
 
-To gracefully stop, create an empty `stop` file (location is configed in
-`config.json`).
-
 To speed up analysis, use MusicMagicMixer GUI and disable 'Connect to server' in
 'Server' preference category.
 
@@ -19,7 +16,6 @@ To speed up analysis, use MusicMagicMixer GUI and disable 'Connect to server' in
    "mip":"/home/lms/MusicIP/"
  },
  "lib":"/path/to/lms/library.db",
- "stop":"stop",
  "batch":50,
  "limit":"50000",
  "threads":7
@@ -37,9 +33,6 @@ it. This is only required for CUE file processing.
 
 `lib` should contain the location of LMS's `library.db` and is only used for CUE
 file processing.
-
-`stop` this script will poll for the presence of this file, and if found
-processing will terminate gracefully.
 
 `batch` is the number of files that will be transcoded and then analysed.
 

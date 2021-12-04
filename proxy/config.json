@@ -5,8 +5,8 @@
    "host":"localhost"
  },
  "paths":{
-   "lms":"/home/user/Music/",
-   "mip":"/home/user/MusicIP/"
+   "lms":"/home/storage/Music/",
+   "mip":"/home/craig/MusicIP/"
  },
  "transcode":["m4a"],
  "debug":false
