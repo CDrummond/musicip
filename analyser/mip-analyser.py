@@ -369,6 +369,8 @@ def main():
     global db
     parser = argparse.ArgumentParser(description='MusicIP File Analyser')
     parser.add_argument('-c', '--config', type=str, help='Config file (default: config.json)', default='config.json')
+    parser.add_argument('-d', '--dryrun', action='store_true', default=False, help='Only show changes required')
+
     args = parser.parse_args()
 
     if not os.path.exists(args.config):
@@ -416,6 +418,9 @@ def main():
     toAdd, toRemove = check(mipSongs, files)
     print("Have %d file(s) to add" % len(toAdd))
     print("Have %d file(s) to remove" % len(toRemove))
+
+    if args.dryrun:
+        return
 
     # Check if we have an files left over from a previous run, and if so anayse now
     previous = readPrevious()
