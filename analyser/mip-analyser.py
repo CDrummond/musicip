@@ -24,13 +24,13 @@ db=None
 
 def info(s, withNewLine=True):
     if withNewLine:
-        print("[%s] [I] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
+        print("[%s] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
     else:
-        print("[%s] [I] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s), end='')
+        print("[%s] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s), end='')
 
 
 def error(s, andExit=True):
-    print("\n[%s] [E] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
+    print("\n[%s] ERROR: %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
     if andExit:
         exit(-1)
 
