@@ -7,7 +7,7 @@
 # GPLv3 license.
 #
 
-import argparse, json, operator, os, pathlib, signal, sqlite3, subprocess, sys, time
+import argparse, datetime, json, operator, os, pathlib, signal, sqlite3, subprocess, sys, time
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -21,16 +21,25 @@ PREV_RUN = '.tracks'
 config={}
 db=None
 
-def error(s):
-    print("ERROR: %s\n" % s)
-    exit(-1)
+
+def info(s, withNewLine=True):
+    if withNewLine:
+        print("[%s] [I] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
+    else:
+        print("[%s] [I] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s), end='')
+
+
+def error(s, andExit=True):
+    print("\n[%s] [E] %s" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), s))
+    if andExit:
+        exit(-1)
 
 
 should_stop = False
 def sigHandler(signum, frame):
     global should_stop
     should_stop = True
-    _LOGGER.info('Intercepted CTRL-C, stopping (might take a few seconds)...')
+    info('Intercepted CTRL-C, stopping (might take a few seconds)...')
 
 
 def shouldStop():
@@ -77,7 +86,7 @@ def createDir(d):
 
 
 def doCommand(cmd):
-    #print("COMMAND: %s" % str(cmd))
+    #info("COMMAND: %s" % str(cmd))
     subprocess.Popen(cmd, stdout=FNULL, stderr=subprocess.STDOUT).wait()
 
 
@@ -155,7 +164,7 @@ def transcode(track):
     isCue = isinstance(track, dict)
     path = track['file'] if isCue else track
 
-    #print('...transcoding %s' % path)
+    #info('...transcoding %s' % path)
     destDir = os.path.join(config['paths']['mip'], os.path.dirname(path))
     createDir(destDir)
 
@@ -173,7 +182,7 @@ def stripTags(file):
     some of these. ONLY trip non-symlinked MP3s
     '''
     if not os.path.islink(file) and file.endswith(".mp3"):
-        #print("...stripping tags from %s" % file)
+        #info("...stripping tags from %s" % file)
         doCommand(["eyeD3", "--remove-all-comments", "--remove-all-lyrics", "--remove-all-images", "--max-padding", "1", file])
 
 
@@ -250,7 +259,7 @@ def check(mipSongs, files):
 
 def removeTranscode(path):
     global config
-    print("Cleanup %s" % path)
+    info("Cleanup %s" % path)
 
     if os.path.exists(path):
         os.remove(path)
@@ -290,13 +299,13 @@ def removePrevious():
 
 def doAnalysis(tempToRemove):
     try:
-        write("Add path to MIP")
+        info("Add path to MIP", False)
         sendMipCommand('server/add?root=%s' % config['paths']['mip']).read()
         if not waitForIdle():
             savePrevious(tempToRemove)
             return False
 
-        write("Analysing")
+        info("Analysing", False)
         sendMipCommand('server/validate?action=Start+Validation')
         if not waitForIdle():
             sendMipCommand('server/validate?action=Stop+Validation')
@@ -304,7 +313,7 @@ def doAnalysis(tempToRemove):
             return False
 
     except Exception as e:
-        print("\nMIP is no longer running? %s" % str(e))
+        error("MIP is no longer running? %s" % str(e), False)
         savePrevious(tempToRemove)
         return False
 
@@ -318,7 +327,11 @@ def doAnalysis(tempToRemove):
 def processTrack(track, current, total):
     if not shouldStop():
         path = track['file'] if isinstance(track, dict) else track
-        print("Processing track %d of %d - %s" % (current, total, path))
+
+        digits=len(str(total))
+        fmt="[{:>%d} {:3}%%] {}" % ((digits*2)+1)
+        info(fmt.format("%d/%d" % (current+1, total), int((current+1)*100/total), path))
+
         dest = transcode(track)
         stripTags(dest)
         return dest
@@ -326,7 +339,7 @@ def processTrack(track, current, total):
 
 def processTracks(tracks):
     if len(tracks)>config['limit']:
-        print("Too many tracks, only processing %d of %d" % (config['limit'], len(tracks)))
+        info("Too many tracks, only processing %d of %d" % (config['limit'], len(tracks)))
         tracks = tracks[:config['limit']]
     toProcess = len(tracks)
     total = toProcess
@@ -389,9 +402,6 @@ def main():
         if not os.path.exists(config['paths'][path]):
             error("ERROR: %s does not exist" % config['paths'][path])
 
-    if not 'stop' in config:
-        config['stop']='stop'
-
     if not 'batch' in config:
         config['batch']=50
 
@@ -410,32 +420,32 @@ def main():
     except Exception as e:
         error("MIP is not running : %s" % str(e))
 
-    print("Query MIP for its known songs")
+    info("Query MIP for its known songs")
     mipSongs = getMipSongs()
     files = []
-    print("Query filesystem/LMS for songs")
+    info("Query filesystem/LMS for songs")
     getFiles(config['paths']['lms'], files)
     toAdd, toRemove = check(mipSongs, files)
-    print("Have %d file(s) to add" % len(toAdd))
-    print("Have %d file(s) to remove" % len(toRemove))
+    info("Have %d file(s) to add" % len(toAdd))
+    info("Have %d file(s) to remove" % len(toRemove))
 
     if args.dryrun:
         return
 
-    # Check if we have an files left over from a previous run, and if so anayse now
+    # Check if we have any files left over from a previous run, and if so anayse now
     previous = readPrevious()
     if len(previous)>0:
-        print("Have %d file(s) to analyse from previous run" % len(previous))
+        info("Have %d file(s) to analyse from previous run" % len(previous))
         if not doAnalysis(previous):
             return
 
     if len(toAdd)>0:
         processTracks(toAdd)
     if len(toRemove)>0:
-        print("\nThe following should be removed from MIP:\n")
+        info("\nThe following should be removed from MIP:\n")
         for path in toRemove:
-            print("   %s" % path)
-        print("\n")
+            info("   %s" % path)
+        info("\n")
 
 
 if __name__ == "__main__":
