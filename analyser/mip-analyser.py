@@ -35,16 +35,27 @@ def error(s, andExit=True):
         exit(-1)
 
 
-should_stop = False
+should_stop = False # Stop after analysing current
+should_stop_now = False # Stop as qick as possible
 def sigHandler(signum, frame):
     global should_stop
-    should_stop = True
-    info('Intercepted CTRL-C, stopping (might take a few seconds)...')
+    global should_stop_now
+    if should_stop:
+        should_stop_now = True
+        info('Intercepted second CTRL-C, stopping now (might take a few seconds)...')
+    else:
+        should_stop = True
+        info('Intercepted CTRL-C, stopping (will wait for analysis to finish)...')
 
 
 def shouldStop():
     global should_stop
     return should_stop
+
+
+def shouldStopNow():
+    global should_stop_now
+    return should_stop_now
 
 
 def sendMipCommand(path):
@@ -202,7 +213,7 @@ def waitForIdle():
         if b'idle' == status:
             write('\n')
             return True
-        if shouldStop():
+        if shouldStopNow():
             write(' Stopped\n')
             return False
 
@@ -330,7 +341,7 @@ def doAnalysis(tempToRemove):
         removeTranscode(temp)
     removePrevious()
 
-    return True
+    return False if shouldStop() else True
 
 
 def processTrack(track, current, total):
@@ -381,9 +392,7 @@ def processTracks(tracks):
             return
 
         if not doAnalysis(tempToRemove):
-            return False
-
-    return True
+            return
 
 
 def main():
