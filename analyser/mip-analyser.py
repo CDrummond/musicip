@@ -209,17 +209,26 @@ def waitForIdle():
 
 def getMipSongs():
     global config
-    lines=sendMipApiCommand('songs').splitlines()
+    lines=sendMipApiCommand('songs?extended').splitlines()
     mipLen = len(config['paths']['mip'])
     songs = []
+    inactiveSongs = []
+    path = None
     for line in lines:
-        path=line.decode()
-        if path.startswith(config['paths']['mip']):
-            path = path[mipLen:]
-        if path.endswith('.m4a.mp3'):
-            path = path[:-4]
-        songs.append(path)
-    return set(songs)
+        line=line.decode()
+        if line.startswith('file '):
+            path = line[5:]
+            if path.startswith(config['paths']['mip']):
+                path = path[mipLen:]
+            if path.endswith('.m4a.mp3'):
+                path = path[:-4]
+        elif line.startswith('active '):
+            if path is not None:
+                if line.startswith('active no'):
+                    inactiveSongs.append(path)
+                songs.append(path)
+                path = None
+    return set(songs), set(inactiveSongs)
 
 
 def getFiles(path, files):
@@ -421,31 +430,38 @@ def main():
         error("MIP is not running : %s" % str(e))
 
     info("Query MIP for its known songs")
-    mipSongs = getMipSongs()
+    mipSongs, inactiveSongs = getMipSongs()
     files = []
     info("Query filesystem/LMS for songs")
     getFiles(config['paths']['lms'], files)
     toAdd, toRemove = check(mipSongs, files)
     info("Have %d file(s) to add" % len(toAdd))
     info("Have %d file(s) to remove" % len(toRemove))
+    info("Have %d files(s) that are inactive" % len(inactiveSongs))
 
-    if args.dryrun:
-        return
+    if not args.dryrun:
+        # Check if we have any files left over from a previous run, and if so anayse now
+        previous = readPrevious()
+        if len(previous)>0:
+            info("Have %d file(s) to analyse from previous run" % len(previous))
+            if not doAnalysis(previous):
+                return
 
-    # Check if we have any files left over from a previous run, and if so anayse now
-    previous = readPrevious()
-    if len(previous)>0:
-        info("Have %d file(s) to analyse from previous run" % len(previous))
-        if not doAnalysis(previous):
-            return
+        if len(toAdd)>0:
+            processTracks(toAdd)
 
-    if len(toAdd)>0:
-        processTracks(toAdd)
     if len(toRemove)>0:
-        info("\nThe following should be removed from MIP:\n")
+        info(" ")
+        info("The following should be removed from MIP:")
         for path in toRemove:
-            info("   %s" % path)
-        info("\n")
+            info("  %s" % path)
+        info(" ")
+    if len(inactiveSongs)>0:
+        info(" ")
+        info("The following INACTIVE should be removed from MIP, and re-analysed:")
+        for path in inactiveSongs:
+            info("  %s" % path)
+        info(" ")
 
 
 if __name__ == "__main__":
