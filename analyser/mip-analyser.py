@@ -42,9 +42,11 @@ def sigHandler(signum, frame):
     global should_stop_now
     if should_stop:
         should_stop_now = True
+        info(" ")
         info('Intercepted second CTRL-C, stopping now (might take a few seconds)...')
     else:
         should_stop = True
+        info(" ")
         info('Intercepted CTRL-C, stopping (will wait for analysis to finish)...')
 
 
